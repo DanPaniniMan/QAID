@@ -32,3 +32,6 @@ def doubleAngle(inputData, nQubits):
         for i in range(nQubits):
             pass
     return outputData
+
+def PCA(trainData, testData, nQubits):
+    pass
