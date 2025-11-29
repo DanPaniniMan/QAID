@@ -1,0 +1,7 @@
+fire>=0.7.0
+lightning>=2.5.0
+numpy>=2.2.1
+pandas
+scikit-learn
+qiskit
+qiskit_aer
