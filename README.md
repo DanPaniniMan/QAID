@@ -1,1 +1,2 @@
 # QAID
+QAID stands for Quantum Artificial Intelligence Detector. The main goal of this project is to use a Quantum Enhanced Support Vector Machine in order to solve a particular classification problem, that of identifying ai generated content. We are adapting the methods from Quantum-Enhanced Support Vector Machine for Sentiment Classification (Ruskunda et al), modifying the methods from identifying a positive/negative sentiment in a sentance to trying to identify whether it was written by a human or an artificial intelligence. 
