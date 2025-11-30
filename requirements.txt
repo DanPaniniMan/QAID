@@ -5,3 +5,6 @@ pandas
 scikit-learn
 qiskit
 qiskit_aer
+qiskit_algorithms
+lambeq
+discopy

@@ -69,5 +69,5 @@ nQubits = 7
 outputTrain_pca, outputTest_pca = pca_data_transformation(trainData, testData, nQubits)
 print(outputTrain_pca)
 
-outputTest_pca
+print(outputTest_pca)
 # The output data will have 14 columns, maintaining maximum variance [7].
