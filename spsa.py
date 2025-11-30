@@ -3,7 +3,7 @@ from qiskit_algorithms.optimizers import SPSA
 from qiskit.circuit.library import pauli_two_design
 from qiskit.primitives import StatevectorEstimator
 from qiskit.quantum_info import SparsePauliOp
-from lambeq import BobcatParser, IQPAnsatz, AtomicType, Rewriter
+from lambeq import CircuitParser, IQPAnsatz, AtomicType, Rewriter
 from discopy import monoidal
 
 # from lambeq.rewrite import (
@@ -37,7 +37,22 @@ def get_values(parser, rewriter, ansatz_obj, sentence: str):
 
 
 # --- 1. initialize the parser ---
-parser = BobcatParser()
+try:
+    parser = CircuitParser()
+except Exception as e:
+    # Most likely lambeq attempted to download the Bobcat model from
+    # qnlp.cambridgequantum.com and failed due to DNS/network issues.
+    # Fixes:
+    #  - Run the script with working internet so the model can be downloaded, or
+    #  - Download the model manually and pass the local path, e.g.:
+    #       parser = BobcatParser(model_name_or_path="/path/to/local/bobcat")
+    #    (replace the path with the folder containing the model files)
+    # Re-raise a clearer error to guide the user.
+    raise RuntimeError(
+        "Failed to initialize BobcatParser: lambeq could not reach qnlp.cambridgequantum.com.\n"
+        "Either run with internet access so the model can be downloaded, or provide a local model path:\n"
+        "    parser = BobcatParser(model_name_or_path='/path/to/local/bobcat')"
+    ) from e
 
 # --- 2. Defining the Qubit Mapping and Creating the IQPAnsatz ---
 
