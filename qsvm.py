@@ -7,10 +7,16 @@ from sklearn.preprocessing import MinMaxScaler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
 from qiskit_machine_learning.algorithms import QSVC
+import time
 
 from qiskit.circuit.library import ZZFeatureMap, PauliFeatureMap
 from qiskit.primitives import Sampler
 # from qiskit_machine_learning.kernels import QuantumKernel
+
+#parameters to adjust
+model_name = "qsvc_model_3000.pkl"
+train_size = 3000
+FEATURE_COUNT = 4 # creates a 4 qubit system
 
 #load and split data
 train_df = pd.read_csv("./data/train.csv")
@@ -19,10 +25,10 @@ test_df = pd.read_csv("./data/test.csv")
 X = train_df.drop('label', axis=1)
 y = train_df['label']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.3, random_state=100)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= int(train_size/4), train_size=train_size, random_state=100)
 
 # --- Process the dataframes for initializing the Quantum Kernel ---
-FEATURE_COUNT = 4 # creates a 4 qubit system
+
 pca = PCA(n_components=FEATURE_COUNT)
 scaler = MinMaxScaler((0, 2 * np.pi)) #scales to valid angle values
 
@@ -51,8 +57,23 @@ adhoc_kernel = FidelityQuantumKernel(fidelity=fidelity, feature_map=feature_map)
 
 qsvc = QSVC(quantum_kernel=adhoc_kernel)
 print("kernel initialized, now training")
+start = time.time()
 qsvc.fit(X_train_scaled_features, y_train)
+end = time.time()
+train_time = end - start
+
+print("time to train: " + str(train_time))
+
+qsvc.save(model_name)
+
 print("finished training, now scoring")
-qsvc_score = qsvc.score(X_test_features, y_test)
+qsvc_score = qsvc.score(X_test_scaled_features, y_test)
 
 print(f"QSVC classification test score: {qsvc_score}")
+
+# code for loading a model to test
+# loaded_qsvc_model = QSVC.load(model_name)
+# Now you can use the loaded_model for prediction or further training
+# For example:
+# predictions = loaded_qsvc_model.predict(X_test_scaled_features)
+# print(predictions)
