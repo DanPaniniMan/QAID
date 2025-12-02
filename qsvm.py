@@ -11,7 +11,6 @@ import time
 
 from qiskit.circuit.library import ZZFeatureMap, PauliFeatureMap
 from qiskit.primitives import Sampler
-# from qiskit_machine_learning.kernels import QuantumKernel
 
 #parameters to adjust
 model_name = "qsvc_model_3000.pkl"
@@ -41,7 +40,7 @@ X_train_scaled_features = scaler.transform(X_train_features) #scale to rotations
 X_test_features = pca.transform(X_test)
 X_test_scaled_features = scaler.transform(X_test_features)
 
-# create the feature map to embed our data into
+# --- create the feature map to embed our data into ---
 # qiskit docs source: https://qiskit-community.github.io/qiskit-machine-learning/tutorials/03_quantum_kernel.html
 feature_map = ZZFeatureMap(
     feature_dimension=FEATURE_COUNT, 
@@ -49,16 +48,22 @@ feature_map = ZZFeatureMap(
     entanglement='linear' # Connects adjacent qubits
 )
 
+# for simulation
 sampler = Sampler()
 
+# computes fidelity
 fidelity = ComputeUncompute(sampler=sampler)
 
 adhoc_kernel = FidelityQuantumKernel(fidelity=fidelity, feature_map=feature_map)
 
-qsvc = QSVC(quantum_kernel=adhoc_kernel)
+# --- Construct and train the quantum kernel ---
+qsvc = QSVC(quantum_kernel=adhoc_kernel) #QSVC model creation
+
 print("kernel initialized, now training")
 start = time.time()
-qsvc.fit(X_train_scaled_features, y_train)
+
+qsvc.fit(X_train_scaled_features, y_train) #finds the hyperplane
+
 end = time.time()
 train_time = end - start
 
@@ -67,8 +72,8 @@ print("time to train: " + str(train_time))
 qsvc.save(model_name)
 
 print("finished training, now scoring")
-qsvc_score = qsvc.score(X_test_scaled_features, y_test)
 
+qsvc_score = qsvc.score(X_test_scaled_features, y_test)
 print(f"QSVC classification test score: {qsvc_score}")
 
 # code for loading a model to test
